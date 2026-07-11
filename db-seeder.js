@@ -9,5 +9,6 @@ const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simpl
 
 db_connection()
 
+Tour.deleteMany().then(()=>console.log("DB reset successfully")).catch((err)=> console.log(err))
 Tour.create(tours).then((tours)=>console.log("Tours seeded successfully"))
 .catch((err)=> console.log(err))

@@ -2,6 +2,7 @@ const fs = require("fs")
 const json_data = `${__dirname}/../dev-data/data/tours-simple.json`
 const tours = JSON.parse(fs.readFileSync(json_data))
 const Tour = require("../models/tours")
+const appError = require("../utils/appError")
 
 
 // ? curd on json files
@@ -86,24 +87,32 @@ const Tour = require("../models/tours")
 //? crud on database
 
 exports.getAllTours = async (req,res)=> { 
-const tours = await Tour.find()
+  const page = req.query.page *1 || 1
+  const limit = req.query.limit *1 || 5
+  const skip = (page-1)*limit
+const tours = await Tour.find().sort("-ratingsAverage -price")
+.select("name price ratingsAverage -_id")
+.skip(skip)
+.limit(limit)
 res.json(tours)
 }
-  exports.createTour = (req,res) => {
-    
+  exports.createTour = async (req,res) => {
+    const tour = await Tour.create(req.body)
+    res.json({
+      status: "success",
+      tour
+    })
   }
 
 exports.getTour = async (req,res)=> {
   const id = req.params.id   
 const tour =await Tour.findById(id)
 if(!tour) {
-  return res.status(404).json({
-    status: "fail",
-    message: "No tour found"
-  })
+ throw new appError("No Tour found")
+  }
+  res.send(tour)
 }
-res.send(tour)
-}
+
   exports.editTour = async (req,res) => {
     const id = req.params.id   
     const tour =await Tour.findByIdAndUpdate(
@@ -115,18 +124,11 @@ res.send(tour)
   }
   exports.deleteTour = async (req,res) => {
     const id = req.params.id  
-    try {
-     const tour = await Tour.findByIdAndDelete(id)
+    const tour = await Tour.findByIdAndDelete(req.params.id);
+
     if (!tour) {
-      return res.status(404).json({
-        status: "fail",
-        message: "No tour found with that ID"
-      });
+      throw new appError("No Tour found", 300)
+      }
+      res.status(204).send();
     }
-    return res.status(204).send();
-   } catch(err) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Incorrect Id format"
-   })
-  }}
+  
