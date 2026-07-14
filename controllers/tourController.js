@@ -122,16 +122,17 @@ if(!tour) {
 
   exports.editTour = async (req,res,next) => {
     const input = tourSchema.parse(req.body)
-    const id = req.params.id   
     const tour =await Tour.findByIdAndUpdate(
       req.params.id,
       input,
-      {returnDocument: "after"}
+      {
+        new: true,
+        runValidators: true,
+      returnDocument: "after"}
     )
     res.json(tour)
   }
   exports.deleteTour = async (req,res,next) => {
-    const id = req.params.id  
     const tour = await Tour.findByIdAndDelete(req.params.id);
 
     if (!tour) {

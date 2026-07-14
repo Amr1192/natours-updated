@@ -1,20 +1,11 @@
 const User = require("../models/users")
-const {z} = require("zod")
 const AppError = require("../utils/AppError")
-const userSchema = z.object({
-    name:z.string(),
-    email:z.string().email(),
-    password: z.string().min(8),
-    confirmPassword: z.string()
-}).refine((data)=> data.password === data.confirmPassword, {
-    message: "Password doesn't match",
-    path: ["confirmPassword"]
-})
-exports.getAllUsers = async (req,res,next) => {
+
+const userSchema = require("../validators/userValidator")
+const authSchema = require("../validators/authValidator")
+
+exports.getAllUsers = async (req,res) => {
 const users = await User.find()
-if(users.length === 0) {
-    return next(new AppError("You have no users",404))
-}
 res.json({
     status: "success",
 users
@@ -23,32 +14,55 @@ users
 
 
 }
-exports.createUser = async (req,res,next) => {
-const input = userSchema.parse(req.body)
-const user = await User.create(input)
+exports.createUser = async (req,res) => {
+const input = authSchema.parse(req.body)
+const {
+    confirmPassword,
+    ...userData
+} = input;
 
-res.json({
+const user = await User.create(userData);
+
+res.status(201).json({
     status: "success",
     user
 })
 }
-exports.getUser = async (req,res,next) => {
+exports.getUser = async (req,res) => {
 const user = await User.findById(req.params.id)
-if(!user) {
-    return next(new AppError("User not found",404))
+if (!user) {
+    throw new AppError("User not found", 404);
 }
 res.json({
     status: "success",
     user
 })
 }
-exports.updateUser = async (req,res,next) => {
+exports.updateUser = async (req,res) => {
     const {id} = req.params
  const input = userSchema.parse(req.body)
- User.findByIdAndUpdate(input)
-
+ const user = await User.findByIdAndUpdate(
+    id,
+    input,
+    {
+        new: true,
+        runValidators: true
+    }
+ )
+ if (!user) {
+    throw new AppError("User not found", 404);
 }
-exports.deleteUser = async (req,res,next) => {
-
+ res.json({
+    status: "success",
+    user
+})
+}
+exports.deleteUser = async (req,res) => {
+    const {id} = req.params
+    const user = await User.findByIdAndDelete(id)
+    if (!user) {
+    throw new AppError("User not found", 404);
+}
+    res.status(204).send()
 }
 
