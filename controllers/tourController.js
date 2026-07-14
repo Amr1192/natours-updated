@@ -2,8 +2,13 @@ const fs = require("fs")
 const json_data = `${__dirname}/../dev-data/data/tours-simple.json`
 const tours = JSON.parse(fs.readFileSync(json_data))
 const Tour = require("../models/tours")
-const appError = require("../utils/appError")
+const appError = require("../utils/AppError")
+const {z} = require("zod")
 
+const tourSchema = z.object({
+  name: z.string().min(3),
+  rating: z.number().max(5).min(1),
+})
 
 // ? curd on json files
 // exports.getAllTours = (req,res)=> {
@@ -86,7 +91,7 @@ const appError = require("../utils/appError")
 
 //? crud on database
 
-exports.getAllTours = async (req,res)=> { 
+exports.getAllTours = async (req,res,next)=> { 
   const page = req.query.page *1 || 1
   const limit = req.query.limit *1 || 5
   const skip = (page-1)*limit
@@ -96,15 +101,17 @@ const tours = await Tour.find().sort("-ratingsAverage -price")
 .limit(limit)
 res.json(tours)
 }
-  exports.createTour = async (req,res) => {
-    const tour = await Tour.create(req.body)
+
+  exports.createTour = async (req,res,next) => {
+    const input = tourSchema.parse(req.body)
+    const tour = await Tour.create(input)
     res.json({
       status: "success",
       tour
     })
   }
 
-exports.getTour = async (req,res)=> {
+exports.getTour = async (req,res,next)=> {
   const id = req.params.id   
 const tour =await Tour.findById(id)
 if(!tour) {
@@ -113,21 +120,22 @@ if(!tour) {
   res.send(tour)
 }
 
-  exports.editTour = async (req,res) => {
+  exports.editTour = async (req,res,next) => {
+    const input = tourSchema.parse(req.body)
     const id = req.params.id   
     const tour =await Tour.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      input,
       {returnDocument: "after"}
     )
     res.json(tour)
   }
-  exports.deleteTour = async (req,res) => {
+  exports.deleteTour = async (req,res,next) => {
     const id = req.params.id  
     const tour = await Tour.findByIdAndDelete(req.params.id);
 
     if (!tour) {
-      throw new appError("No Tour found", 300)
+      throw new appError("No Tour found", 404)
       }
       res.status(204).send();
     }
