@@ -1,8 +1,7 @@
 const User = require("../models/users")
 const AppError = require("../utils/AppError")
 
-const userSchema = require("../validators/userValidator")
-const authSchema = require("../validators/authValidator")
+const {updateUserSchema} = require("../validators/updateUserValidator")
 
 exports.getAllUsers = async (req,res) => {
 const users = await User.find()
@@ -14,20 +13,7 @@ users
 
 
 }
-exports.createUser = async (req,res) => {
-const input = authSchema.parse(req.body)
-const {
-    confirmPassword,
-    ...userData
-} = input;
 
-const user = await User.create(userData);
-
-res.status(201).json({
-    status: "success",
-    user
-})
-}
 exports.getUser = async (req,res) => {
 const user = await User.findById(req.params.id)
 if (!user) {

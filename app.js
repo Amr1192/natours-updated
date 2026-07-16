@@ -5,6 +5,8 @@ const tourRouter = require("./routes/tourRouter")
 app.use("/tours",tourRouter)
 const userRouter = require("./routes/userRouter")
 app.use("/users",userRouter)
+const authRouter = require("./routes/authRouter")
+app.use("/",authRouter)
 
 const { ZodError } = require("zod");
 
