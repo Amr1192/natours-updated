@@ -1,6 +1,5 @@
 const User = require("../models/users")
 const AppError = require("../utils/AppError")
-
 const {updateUserSchema} = require("../validators/updateUserValidator")
 
 exports.getAllUsers = async (req,res) => {

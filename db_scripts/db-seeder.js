@@ -1,9 +1,9 @@
 const dotenv = require("dotenv")
 dotenv.config()
 const mongoose = require("mongoose")
-const db_connection = require("./database")
+const db_connection = require("../database")
 const fs = require("fs")
-const Tour = require("./models/tours")
+const Tour = require("../models/tours")
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`))
 
 

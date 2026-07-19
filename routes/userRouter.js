@@ -1,9 +1,10 @@
 const express = require("express")
 const router = express.Router()
 const userController = require("../controllers/userController")
+const {protect, restrictTo} = require("../middleware/authMiddleware")
 
 router.route("/")
-.get(userController.getAllUsers)
+.get(protect,restrictTo("admin"),userController.getAllUsers)
 
 router.route("/:id")
 .get(userController.getUser)
