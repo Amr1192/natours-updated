@@ -10,4 +10,5 @@ router.route("/login")
 // .get(authController.getLogin)
 .post(authController.login)
 
+router.route("/forgotPassword").post(authController.forgotPassword)
 module.exports = router

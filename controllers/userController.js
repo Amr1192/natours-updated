@@ -1,4 +1,4 @@
-const User = require("../models/users")
+const User = require("../models/userModel")
 const AppError = require("../utils/AppError")
 const {updateUserSchema} = require("../validators/updateUserValidator")
 

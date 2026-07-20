@@ -1,9 +1,9 @@
-const User = require("../models/users")
+const User = require("../models/userModel")
 const AppError = require("../utils/AppError")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken");
 const {authSchema} = require("../validators/authValidator")
-
+const sendEmail = require("../services/email")
 const signToken = (id) => {
     return jwt.sign(
         {id}, 
@@ -44,4 +44,13 @@ exports.signup = async (req,res) => {
             throw new AppError("Invalid email or password", 401);
         }
         createSendToken(user,200,res)
+    }
+
+    exports.forgotPassword = async(req,res)=> {
+        const {email} = req.body
+        const user = await User.findOne({email})
+        const resetToken = user.createPasswordResetToken()
+        await user.save()
+        await sendMail({email})
+
     }

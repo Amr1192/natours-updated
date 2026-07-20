@@ -1,7 +1,7 @@
 const fs = require("fs")
 const json_data = `${__dirname}/../dev-data/data/tours-simple.json`
 const tours = JSON.parse(fs.readFileSync(json_data))
-const Tour = require("../models/tours")
+const Tour = require("../models/tourModel")
 const appError = require("../utils/AppError")
 const {z} = require("zod")
 
