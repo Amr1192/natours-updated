@@ -25,7 +25,7 @@ res.json({
 }
 exports.updateUser = async (req,res) => {
     const {id} = req.params
- const input = userSchema.parse(req.body)
+ const input = updateUserSchema.parse(req.body)
  const user = await User.findByIdAndUpdate(
     id,
     input,

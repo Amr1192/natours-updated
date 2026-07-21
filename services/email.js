@@ -10,13 +10,14 @@ const transporter = nodemailer.createTransport({
 })
 
 
-const sendMail = async ({email,subject = "password reset" ,message = "Please reset your password"}) => {
+const sendMail = async ({email,subject,message,url}) => {
     await transporter.sendMail({
         from: "Natours <noreply@natours.com>",
         to : email,
-        subject: subject,
-        text: message,
+        subject: subject || "password reset",
+        html:`<h2>Please reset your password 
+        <a href="${url}">Reset Password</a></h2>`,
     })
 }
 
-module.exports = sendEmail
+module.exports = sendMail

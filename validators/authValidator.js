@@ -8,3 +8,14 @@ exports.authSchema = z.object({
     message: "Password doesn't match",
     path: ["confirmPassword"]
 })
+
+exports.resetPasswordSchema = z.object({
+    password: z.string().min(8),
+    confirmPassword: z.string()
+}).refine(
+    (data) => data.password === data.confirmPassword,
+    {
+        message: "Passwords do not match",
+        path: ["confirmPassword"]
+    }
+);

@@ -61,6 +61,17 @@ userSchema.pre("save", async function() {
     this.password = await bcrypt.hash(this.password,12)
 })
 
+userSchema.pre("save", function (next) {
+
+    if (!this.isModified("password") || this.isNew) {
+        return next();
+    }
+
+    this.passwordChangedAt = Date.now() - 1000;
+
+    next();
+});
+
 const User = mongoose.model("User",userSchema)
 
 module.exports = User

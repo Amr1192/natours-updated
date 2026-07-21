@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const User = require("../models/users")
+const User = require("../models/userModel")
 require("dotenv").config()
 const reset = async ()=> {
     try {
